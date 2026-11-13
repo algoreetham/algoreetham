@@ -177,12 +177,6 @@ def monthly(days):
 # ---- cards ------------------------------------------------------------------
 def hero():
     W, H = 1000, 460
-    # Load colored portrait data if available, else fall back to plain text
-    color_file = ROOT / "data" / "portrait_color.json"
-    has_color = color_file.exists()
-    if has_color:
-        color_rows = json.loads(color_file.read_text())
-    rows = (ROOT / "data" / "portrait.txt").read_text().split("\n")
     p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>']
     p.append(f'<text x="56" y="84" class="mono rise"{d(0)} font-size="14" letter-spacing="3" fill="{MUTE}">HELLO, I AM</text>')
     p.append(f'<text x="56" y="206" class="serif rise"{d(.15)} font-size="126" fill="{INK}">{FIRST}</text>')
@@ -200,58 +194,49 @@ def hero():
     endx = 56 + tw("sans", TAGLINE[-1], 21) + 4
     cur_cls = "" if STATIC else ' class="blink"'
     p.append(f'<rect{cur_cls} x="{endx:.1f}" y="{372 + 30 * (len(TAGLINE) - 1) - 18}" width="10" height="22" fill="{BLUE}"/>')
+    
     # portrait panel
     px, py, pw, ph = 590, 40, 354, 330
-    p.append(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20" fill="{INK}"/>')
-    cols = max(len(r) for r in rows)
-    fs, lh = 9, 10
-    adv = tw("mono", "M", fs)
-    ox = px + (pw - cols * adv) / 2
-    oy = py + (ph - len(rows) * lh) / 2 + lh - 2
-    if has_color:
-        # Render each character with its individual color from the photo
-        for i, crow in enumerate(color_rows):
-            if i >= len(rows) or not rows[i].strip():
-                continue
-            spans = ""
-            for j, cell in enumerate(crow):
-                ch = cell["c"]
-                if ch == " ":
-                    spans += " "
-                    continue
-                r_, g_, b_ = cell["r"], cell["g"], cell["b"]
-                # Boost brightness for visibility on dark background
-                lum = 0.299 * r_ + 0.587 * g_ + 0.114 * b_
-                if lum < 10:
-                    spans += " "
-                    continue
-                # Brighten the color for dark bg visibility (warm glow effect)
-                boost = max(1.0, 160 / max(lum, 1))
-                boost = min(boost, 3.5)
-                r_ = min(255, int(r_ * boost))
-                g_ = min(255, int(g_ * boost))
-                b_ = min(255, int(b_ * boost))
-                spans += f'<tspan fill="#{r_:02x}{g_:02x}{b_:02x}">{esc(ch)}</tspan>'
-            p.append(f'<text x="{ox:.1f}" y="{oy + i * lh:.1f}" xml:space="preserve" class="mono fade"{d(1.0 + i * 0.03)} '
-                     f'font-size="{fs}">{spans}</text>')
+    clip_def = f'<clipPath id="portrait-clip"><rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20"/></clipPath>'
+
+    exact_img = ROOT / "data" / "portrait_exact.jpg"
+    if not exact_img.exists():
+        exact_img = ROOT / "data" / "portrait_exact.png"
+
+    if exact_img.exists():
+        mime = "image/jpeg" if exact_img.suffix in (".jpg", ".jpeg") else "image/png"
+        b64_img = base64.b64encode(exact_img.read_bytes()).decode()
+        p.append(f'<g clip-path="url(#portrait-clip)" class="fade"{d(1.0)}>'
+                 f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" fill="{INK}"/>'
+                 f'<image href="data:{mime};base64,{b64_img}" xlink:href="data:{mime};base64,{b64_img}" '
+                 f'x="{px}" y="{py}" width="{pw}" height="{ph}" preserveAspectRatio="xMidYMid slice"/>'
+                 f'</g>')
     else:
-        # Fallback: monochrome portrait
+        p.append(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20" fill="{INK}"/>')
+        rows = (ROOT / "data" / "portrait.txt").read_text().split("\n")
+        cols = max(len(r) for r in rows)
+        fs, lh = 9, 10
+        adv = tw("mono", "M", fs)
+        ox = px + (pw - cols * adv) / 2
+        oy = py + (ph - len(rows) * lh) / 2 + lh - 2
         for i, r in enumerate(rows):
             if not r.strip():
                 continue
             p.append(f'<text x="{ox:.1f}" y="{oy + i * lh:.1f}" xml:space="preserve" class="mono fade"{d(1.0 + i * 0.03)} '
                      f'font-size="{fs}" fill="{PAPER}" fill-opacity=".92">{esc(r)}</text>')
+
     for i, c in enumerate(CAPTION):
         p.append(f'<text x="{px + pw / 2}" y="{402 + i * 24}" text-anchor="middle" class="mono rise"{d(1.2 + i * .15)} '
                  f'font-size="14" fill="{INK if i == 0 else MUTE}">{esc(c)}</text>')
-    defs = ""
+    
+    defs = clip_def
     if not STATIC:
         stops = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in
                         [(0, BLUE), (.42, BLUE), (.5, "#a9b6ff"), (.58, BLUE), (1, BLUE)])
-        defs = (f'<linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="440" y2="0">{stops}'
-                '<animateTransform attributeName="gradientTransform" type="translate" '
-                'values="-440 0;440 0;440 0" keyTimes="0;.3;1" dur="6s" begin="1.2s" repeatCount="indefinite"/>'
-                "</linearGradient>")
+        defs += (f'<linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="440" y2="0">{stops}'
+                 '<animateTransform attributeName="gradientTransform" type="translate" '
+                 'values="-440 0;440 0;440 0" keyTimes="0;.3;1" dur="6s" begin="1.2s" repeatCount="indefinite"/>'
+                 "</linearGradient>")
     return svg(W, H, "".join(p), ["serif", "serifi", "mono", "sans"], defs,
                f"{FIRST} {LAST}. {' '.join(TAGLINE)}")
 
