@@ -1,3 +1,10 @@
+<div align="center">
+  <a href="https://algoreetham.github.io/algoreetham/">
+    <img src="https://img.shields.io/badge/✨_Live_Interactive_Portfolio-Scroll_Animated-3a56f5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Portfolio" />
+  </a>
+</div>
+<br/>
+
 <img src="./cards/hero.svg?v=3" width="100%" alt="Preetham Singh. A little curiosity, a lot of imagination and endless possibilities." />
 
 <img src="./cards/graph.svg?v=3" width="100%" alt="My GitHub contribution graph for the last year, refreshed daily." />
