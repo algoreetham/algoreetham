@@ -177,6 +177,11 @@ def monthly(days):
 # ---- cards ------------------------------------------------------------------
 def hero():
     W, H = 1000, 460
+    # Load colored portrait data if available, else fall back to plain text
+    color_file = ROOT / "data" / "portrait_color.json"
+    has_color = color_file.exists()
+    if has_color:
+        color_rows = json.loads(color_file.read_text())
     rows = (ROOT / "data" / "portrait.txt").read_text().split("\n")
     p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>']
     p.append(f'<text x="56" y="84" class="mono rise"{d(0)} font-size="14" letter-spacing="3" fill="{MUTE}">HELLO, I AM</text>')
@@ -203,11 +208,39 @@ def hero():
     adv = tw("mono", "M", fs)
     ox = px + (pw - cols * adv) / 2
     oy = py + (ph - len(rows) * lh) / 2 + lh - 2
-    for i, r in enumerate(rows):
-        if not r.strip():
-            continue
-        p.append(f'<text x="{ox:.1f}" y="{oy + i * lh:.1f}" xml:space="preserve" class="mono fade"{d(1.0 + i * 0.03)} '
-                 f'font-size="{fs}" fill="{PAPER}" fill-opacity=".92">{esc(r)}</text>')
+    if has_color:
+        # Render each character with its individual color from the photo
+        for i, crow in enumerate(color_rows):
+            if i >= len(rows) or not rows[i].strip():
+                continue
+            spans = ""
+            for j, cell in enumerate(crow):
+                ch = cell["c"]
+                if ch == " ":
+                    spans += " "
+                    continue
+                r_, g_, b_ = cell["r"], cell["g"], cell["b"]
+                # Boost brightness for visibility on dark background
+                lum = 0.299 * r_ + 0.587 * g_ + 0.114 * b_
+                if lum < 10:
+                    spans += " "
+                    continue
+                # Brighten the color for dark bg visibility (warm glow effect)
+                boost = max(1.0, 160 / max(lum, 1))
+                boost = min(boost, 3.5)
+                r_ = min(255, int(r_ * boost))
+                g_ = min(255, int(g_ * boost))
+                b_ = min(255, int(b_ * boost))
+                spans += f'<tspan fill="#{r_:02x}{g_:02x}{b_:02x}">{esc(ch)}</tspan>'
+            p.append(f'<text x="{ox:.1f}" y="{oy + i * lh:.1f}" xml:space="preserve" class="mono fade"{d(1.0 + i * 0.03)} '
+                     f'font-size="{fs}">{spans}</text>')
+    else:
+        # Fallback: monochrome portrait
+        for i, r in enumerate(rows):
+            if not r.strip():
+                continue
+            p.append(f'<text x="{ox:.1f}" y="{oy + i * lh:.1f}" xml:space="preserve" class="mono fade"{d(1.0 + i * 0.03)} '
+                     f'font-size="{fs}" fill="{PAPER}" fill-opacity=".92">{esc(r)}</text>')
     for i, c in enumerate(CAPTION):
         p.append(f'<text x="{px + pw / 2}" y="{402 + i * 24}" text-anchor="middle" class="mono rise"{d(1.2 + i * .15)} '
                  f'font-size="14" fill="{INK if i == 0 else MUTE}">{esc(c)}</text>')
@@ -424,11 +457,11 @@ def main():
     cards = {
         "hero": hero(),
         "build": tile(BLUE, "#ffffff", "BUILD", str(repos), "public repos",
-                      "Software and AI projects, built in the open.", 2.4, count=repos),
+                      "Software and AI projects, built in the open.", 0.1, count=repos),
         "hackathons": tile(RED, "#ffffff", "HACKATHONS", "Many", "hackathons",
-                           "Teams, deadlines and ideas turned into working demos.", 2.55),
+                           "Teams, deadlines and ideas turned into working demos.", 0.25),
         "learn": tile(YELLOW, INK, "LEARN", "AI & ML", "learning",
-                      "LLMs, AI agents and open source, on the way to GSoC.", 2.7),
+                      "LLMs, AI agents and open source, on the way to GSoC.", 0.4),
         "activity": activity(days),
         "graph": graph(days),
         "stack": stack(),

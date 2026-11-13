@@ -5,7 +5,7 @@ on:
     - cron: "30 0 * * *"   # every day, 6:00 AM India time
   workflow_dispatch:        # lets you press "Run workflow" yourself
   push:
-    paths: ["scripts/**", "data/hackathons.json", "data/portrait.txt", ".github/workflows/refresh-cards.yml"]
+    paths: ["scripts/**", "data/hackathons.json", "data/portrait.txt", "data/portrait_color.json", ".github/workflows/refresh-cards.yml"]
 
 permissions:
   contents: write
