@@ -177,6 +177,7 @@ def monthly(days):
 # ---- cards ------------------------------------------------------------------
 def hero():
     W, H = 1000, 460
+    rows = (ROOT / "data" / "portrait.txt").read_text().split("\n")
     p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>']
     p.append(f'<text x="56" y="84" class="mono rise"{d(0)} font-size="14" letter-spacing="3" fill="{MUTE}">HELLO, I AM</text>')
     p.append(f'<text x="56" y="206" class="serif rise"{d(.15)} font-size="126" fill="{INK}">{FIRST}</text>')
@@ -194,48 +195,30 @@ def hero():
     endx = 56 + tw("sans", TAGLINE[-1], 21) + 4
     cur_cls = "" if STATIC else ' class="blink"'
     p.append(f'<rect{cur_cls} x="{endx:.1f}" y="{372 + 30 * (len(TAGLINE) - 1) - 18}" width="10" height="22" fill="{BLUE}"/>')
-    
     # portrait panel
     px, py, pw, ph = 590, 40, 354, 330
-    clip_def = f'<clipPath id="portrait-clip"><rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20"/></clipPath>'
-
-    display_img = ROOT / "data" / "portrait_display.png"
-    if not display_img.exists():
-        display_img = ROOT / "data" / "portrait.png"
-
-    if display_img.exists():
-        b64_img = base64.b64encode(display_img.read_bytes()).decode()
-        p.append(f'<g clip-path="url(#portrait-clip)" class="fade"{d(1.0)}>'
-                 f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" fill="{INK}"/>'
-                 f'<image href="data:image/png;base64,{b64_img}" xlink:href="data:image/png;base64,{b64_img}" '
-                 f'x="{px}" y="{py}" width="{pw}" height="{ph}" preserveAspectRatio="xMidYMid slice"/>'
-                 f'</g>')
-    else:
-        p.append(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20" fill="{INK}"/>')
-        rows = (ROOT / "data" / "portrait.txt").read_text().split("\n")
-        cols = max(len(r) for r in rows)
-        fs, lh = 9, 10
-        adv = tw("mono", "M", fs)
-        ox = px + (pw - cols * adv) / 2
-        oy = py + (ph - len(rows) * lh) / 2 + lh - 2
-        for i, r in enumerate(rows):
-            if not r.strip():
-                continue
-            p.append(f'<text x="{ox:.1f}" y="{oy + i * lh:.1f}" xml:space="preserve" class="mono fade"{d(1.0 + i * 0.03)} '
-                     f'font-size="{fs}" fill="{PAPER}" fill-opacity=".92">{esc(r)}</text>')
-
+    p.append(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20" fill="{INK}"/>')
+    cols = max(len(r) for r in rows)
+    fs, lh = 9, 10
+    adv = tw("mono", "M", fs)
+    ox = px + (pw - cols * adv) / 2
+    oy = py + (ph - len(rows) * lh) / 2 + lh - 2
+    for i, r in enumerate(rows):
+        if not r.strip():
+            continue
+        p.append(f'<text x="{ox:.1f}" y="{oy + i * lh:.1f}" xml:space="preserve" class="mono fade"{d(1.0 + i * 0.03)} '
+                 f'font-size="{fs}" fill="{PAPER}" fill-opacity=".92">{esc(r)}</text>')
     for i, c in enumerate(CAPTION):
         p.append(f'<text x="{px + pw / 2}" y="{402 + i * 24}" text-anchor="middle" class="mono rise"{d(1.2 + i * .15)} '
                  f'font-size="14" fill="{INK if i == 0 else MUTE}">{esc(c)}</text>')
-    
-    defs = clip_def
+    defs = ""
     if not STATIC:
         stops = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in
                         [(0, BLUE), (.42, BLUE), (.5, "#a9b6ff"), (.58, BLUE), (1, BLUE)])
-        defs += (f'<linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="440" y2="0">{stops}'
-                 '<animateTransform attributeName="gradientTransform" type="translate" '
-                 'values="-440 0;440 0;440 0" keyTimes="0;.3;1" dur="6s" begin="1.2s" repeatCount="indefinite"/>'
-                 "</linearGradient>")
+        defs = (f'<linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="440" y2="0">{stops}'
+                '<animateTransform attributeName="gradientTransform" type="translate" '
+                'values="-440 0;440 0;440 0" keyTimes="0;.3;1" dur="6s" begin="1.2s" repeatCount="indefinite"/>'
+                "</linearGradient>")
     return svg(W, H, "".join(p), ["serif", "serifi", "mono", "sans"], defs,
                f"{FIRST} {LAST}. {' '.join(TAGLINE)}")
 
