@@ -1,5 +1,28 @@
 {
   "repos": 17,
+  "projects": [
+    {
+      "name": "ar-air-write",
+      "description": "Spatial Paint: AR Physics, Flower Garden, and Single-Hand Gesture Tracking in browser",
+      "language": "HTML",
+      "color": "#e34c26",
+      "stars": 1
+    },
+    {
+      "name": "3d-warehouse-simulation",
+      "description": "",
+      "language": "JavaScript",
+      "color": "#f1e05a",
+      "stars": 1
+    },
+    {
+      "name": "irctc-clone",
+      "description": "IRCTC Next Generation e-Ticketing System Clone with 3D WebGL Diorama, Local Autonomous AI Passenger Swarm, Tatkal Rush, and Ask DISHA 2.0 (Alliance University Course E1CSA25306)",
+      "language": "Java",
+      "color": "#b07219",
+      "stars": 1
+    }
+  ],
   "days": [
     {
       "date": "2025-11-15",
