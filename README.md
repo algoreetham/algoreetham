@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://algoreetham.github.io/algoreetham/">
-    <img src="https://img.shields.io/badge/✨_Live_Interactive_Portfolio-Scroll_Animated-3a56f5?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Portfolio" />
+    
   </a>
 </div>
 <br/>
