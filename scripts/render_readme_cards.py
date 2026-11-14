@@ -116,6 +116,14 @@ ANIM = "" if STATIC else """
 .blink{animation:blink 1s steps(1) infinite}
 .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:pulse 1.8s ease-in-out infinite}
 .nudge{animation:nudge 1.6s ease-in-out infinite}
+@keyframes wipe{from{transform:translateY(-100px)}}
+@keyframes sweep{0%{transform:translateX(0)}40%,100%{transform:translateX(900px)}}
+@keyframes ring{0%{opacity:.55;transform:scale(.5)}100%{opacity:0;transform:scale(2.2)}}
+@keyframes streak{0%{transform:translateX(0)}30%,100%{transform:translateX(560px)}}
+.wipe{animation:wipe 2.6s cubic-bezier(.35,0,.25,1) both;animation-delay:var(--d,0s)}
+.sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
+.ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
+.streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
 """
 
@@ -128,7 +136,8 @@ def svg(w, h, body, fonts, defs="", title=""):
     css = "".join(face(f) for f in fonts) + BASE_CSS + ANIM
     return (f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{w}" height="{h}" viewBox="0 0 {w} {h}" '
             f'role="img" aria-label="{esc(title)}"><title>{esc(title)}</title>'
-            f"<defs>{defs}<style>{css}</style></defs>{body}</svg>")
+            f'<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7e7e3"/>'
+            f'<stop offset="1" stop-color="{PAPER}"/></linearGradient>{defs}<style>{css}</style></defs>{body}</svg>')
 
 
 def arrow(x, y, color, nudge=True):
@@ -177,27 +186,38 @@ def monthly(days):
 # ---- cards ------------------------------------------------------------------
 def hero():
     W, H = 1000, 460
-    p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>']
-    p.append(f'<text x="56" y="84" class="mono rise"{d(0)} font-size="14" letter-spacing="3" fill="{MUTE}">HELLO, I AM</text>')
+    p = [f'<rect width="{W}" height="{H}" rx="28" fill="url(#cg)"/>']
+    dot = "" if STATIC else ' class="pulse"'
+    p.append(f'<circle{dot} cx="62" cy="79" r="5" fill="{BLUE}"/>')
+    p.append(f'<text x="78" y="84" class="mono rise"{d(0)} font-size="14" letter-spacing="3" fill="{MUTE}">AI ENGINEER IN THE MAKING</text>')
     p.append(f'<text x="56" y="206" class="serif rise"{d(.15)} font-size="126" fill="{INK}">{FIRST}</text>')
-    fill = BLUE if STATIC else "url(#shine)"
-    p.append(f'<text x="56" y="322" class="serifi rise"{d(.4)} font-size="126" fill="{fill}">{LAST}</text>')
-    t0, step = 1.0, 0.035
+    p.append(f'<text x="56" y="322" class="serifi rise"{d(.4)} font-size="126" fill="{INK}">{LAST}</text>')
+    if not STATIC:  # a blue light sweeps across the name every few seconds
+        p.append(f'<g mask="url(#sweepmask)" fill="{BLUE}"><text x="56" y="206" class="serif" font-size="126">{FIRST}</text>'
+                 f'<text x="56" y="322" class="serifi" font-size="126">{LAST}</text></g>')
     n = 0
     for li, line in enumerate(TAGLINE):
-        y = 372 + li * 30
-        chars = ""
-        for ch in line:
-            chars += f'<tspan class="ty"{d(t0 + n * step)}>{esc(ch)}</tspan>'
+        words = ""
+        for word in line.split(" "):
+            words += f'<tspan class="ty"{d(1.0 + n * .09)}>{esc(word)} </tspan>'
             n += 1
-        p.append(f'<text x="56" y="{y}" xml:space="preserve" class="sans" font-size="21" fill="{INK}">{chars}</text>')
-    endx = 56 + tw("sans", TAGLINE[-1], 21) + 4
-    cur_cls = "" if STATIC else ' class="blink"'
-    p.append(f'<rect{cur_cls} x="{endx:.1f}" y="{372 + 30 * (len(TAGLINE) - 1) - 18}" width="10" height="22" fill="{BLUE}"/>')
-    
-    # portrait panel
+        p.append(f'<text x="56" y="{372 + li * 30}" xml:space="preserve" class="sans" font-size="21" fill="{INK}">{words}</text>')
+    p.append(f'<text x="56" y="438" class="mono rise"{d(1.9)} font-size="14" fill="{MUTE}">github.com/{USER}</text>')
+
+    # portrait panel: your ASCII face prints in from the top with a soft edge
     px, py, pw, ph = 590, 40, 354, 330
-    clip_def = f'<clipPath id="portrait-clip"><rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20"/></clipPath>'
+    wipe_style = f"--d:1s;transform:translateY({ph}px)" if not STATIC else f"transform:translateY({ph}px)"
+    defs = (f'<clipPath id="portrait-clip"><rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20"/></clipPath>'
+            '<linearGradient id="feather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/>'
+            '<stop offset="1" stop-color="#000"/></linearGradient>'
+            f'<mask id="wipemask" maskUnits="userSpaceOnUse" x="{px}" y="{py}" width="{pw}" height="{ph}">'
+            f'<g class="wipe" style="{wipe_style}"><rect x="{px}" y="{py - ph}" width="{pw}" height="{ph}" fill="#fff"/>'
+            f'<rect x="{px}" y="{py}" width="{pw}" height="100" fill="url(#feather)"/></g></mask>')
+    if not STATIC:
+        defs += ('<linearGradient id="band" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000"/>'
+                 '<stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>'
+                 f'<mask id="sweepmask" maskUnits="userSpaceOnUse" x="0" y="0" width="{W}" height="{H}">'
+                 f'<rect class="sweep" x="-260" y="0" width="240" height="{H}" fill="url(#band)"/></mask>')
 
     exact_img = ROOT / "data" / "portrait_exact.jpg"
     if not exact_img.exists():
@@ -206,11 +226,11 @@ def hero():
     if exact_img.exists():
         mime = "image/jpeg" if exact_img.suffix in (".jpg", ".jpeg") else "image/png"
         b64_img = base64.b64encode(exact_img.read_bytes()).decode()
-        p.append(f'<g clip-path="url(#portrait-clip)" class="fade"{d(1.0)}>'
+        p.append(f'<g clip-path="url(#portrait-clip)"><g mask="url(#wipemask)">'
                  f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" fill="{INK}"/>'
                  f'<image href="data:{mime};base64,{b64_img}" xlink:href="data:{mime};base64,{b64_img}" '
                  f'x="{px}" y="{py}" width="{pw}" height="{ph}" preserveAspectRatio="xMidYMid slice"/>'
-                 f'</g>')
+                 f'</g></g>')
     else:
         p.append(f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20" fill="{INK}"/>')
         rows = (ROOT / "data" / "portrait.txt").read_text().split("\n")
@@ -228,15 +248,6 @@ def hero():
     for i, c in enumerate(CAPTION):
         p.append(f'<text x="{px + pw / 2}" y="{402 + i * 24}" text-anchor="middle" class="mono rise"{d(1.2 + i * .15)} '
                  f'font-size="14" fill="{INK if i == 0 else MUTE}">{esc(c)}</text>')
-    
-    defs = clip_def
-    if not STATIC:
-        stops = "".join(f'<stop offset="{o}" stop-color="{c}"/>' for o, c in
-                        [(0, BLUE), (.42, BLUE), (.5, "#a9b6ff"), (.58, BLUE), (1, BLUE)])
-        defs += (f'<linearGradient id="shine" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="440" y2="0">{stops}'
-                 '<animateTransform attributeName="gradientTransform" type="translate" '
-                 'values="-440 0;440 0;440 0" keyTimes="0;.3;1" dur="6s" begin="1.2s" repeatCount="indefinite"/>'
-                 "</linearGradient>")
     return svg(W, H, "".join(p), ["serif", "serifi", "mono", "sans"], defs,
                f"{FIRST} {LAST}. {' '.join(TAGLINE)}")
 
@@ -264,8 +275,16 @@ def tile(color, fg, label, line1, line2, body, delay, count=None):
     p.append(f'<text class="serifi" x="32" y="{y2}" font-size="{fs}" fill="{fg}">{esc(line2)}</text>')
     for i, ln in enumerate(wrap("sans", body, 17, W - 64)):
         p.append(f'<text class="sans" x="32" y="{255 + i * 25}" font-size="17" fill="{fg}">{esc(ln)}</text>')
+    defs = f'<clipPath id="tc"><rect width="{W}" height="{H}" rx="26"/></clipPath>'
+    if not STATIC:
+        defs += ('<linearGradient id="sg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/>'
+                 '<stop offset=".5" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>')
+        p.append(f'<g clip-path="url(#tc)"><circle class="ring" style="--d:{delay + 1:.2f}s" cx="{W - 48}" cy="{H - 44}" r="46" '
+                 f'fill="none" stroke="{fg}" stroke-width="2" opacity="0"/>'
+                 f'<g transform="skewX(-18)"><rect class="streak" style="--d:{delay + 2.5:.2f}s" x="-150" y="-10" width="70" '
+                 f'height="{H + 20}" fill="url(#sg)"/></g></g>')
     p.append("</g>")
-    return svg(W, H, "".join(p), ["serif", "serifi", "mono", "sans"], title=f"{label}: {line1} {line2}. {body}")
+    return svg(W, H, "".join(p), ["serif", "serifi", "mono", "sans"], defs, f"{label}: {line1} {line2}. {body}")
 
 
 def activity(days):
@@ -275,8 +294,8 @@ def activity(days):
     done = keys[:-1] if last.day < 28 else keys
     best = max(done, key=lambda k: tot[k]) if done and max(tot[k] for k in done) > 0 else None
     mx = max(tot.values()) or 1
-    p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>',
-         f'<text x="56" y="62" class="mono" font-size="14" letter-spacing="2.5" fill="{MUTE}">THE LAST 12 MONTHS ON GITHUB</text>',
+    p = [f'<rect width="{W}" height="{H}" rx="28" fill="url(#cg)"/>',
+         f'<text x="56" y="62" class="mono fade"{d(1.2)} font-size="14" letter-spacing="2.5" fill="{MUTE}">THE LAST 12 MONTHS ON GITHUB</text>',
          f'<text x="56" y="140" font-size="78" fill="{INK}" class="rise"{d(0)}><tspan class="serif">{total:,} </tspan>'
          f'<tspan class="serifi">contributions</tspan></text>']
     base, maxh, bw, pitch, x0 = 338, 140, 38, 49, 56
@@ -436,6 +455,49 @@ def contact(kind):
     return svg(W, H, "".join(p), ["serif", "serifi", "mono", "sansm"], title=f"{label.title()}: {big}")
 
 
+def load_projects():
+    return json.loads(DATA_FILE.read_text()).get("projects", [])
+
+
+def shorten(key, text, size, maxw):
+    if tw(key, text, size) <= maxw:
+        return text
+    while text and tw(key, text + "...", size) > maxw:
+        text = text[:-1]
+    return text + "..."
+
+
+def coding(projects):
+    if not projects:
+        return None
+    W, H, x0, gap = 1000, 292, 56, 16
+    cw = (W - 2 * x0 - 2 * gap) / 3
+    p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>',
+         f'<text x="56" y="76" font-size="50" fill="{INK}"><tspan class="serif">What I\u2019m </tspan>'
+         f'<tspan class="serifi" fill="{BLUE}">coding</tspan></text>']
+    for i, pr in enumerate(projects[:3]):
+        x, y, ch = x0 + i * (cw + gap), 108, 152
+        lines = wrap("sans", pr.get("description") or "", 14.5, cw - 40)
+        if len(lines) > 3:
+            lines = lines[:2] + [shorten("sans", lines[2] + " " + lines[3], 14.5, cw - 40)]
+        g = [f'<g class="rise"{d(.3 + i * .15)}>',
+             f'<rect x="{x:.1f}" y="{y}" width="{cw:.1f}" height="{ch}" rx="16" fill="#fff" stroke="{LINE}"/>',
+             f'<circle cx="{x + 26:.1f}" cy="{y + 30}" r="4.5" fill="{pr.get("color") or BLUE}"/>',
+             f'<text x="{x + 40:.1f}" y="{y + 35}" class="sansm" font-size="16" fill="{INK}">'
+             f'{esc(shorten("sansm", pr["name"], 16, cw - 64))}</text>']
+        for j, ln in enumerate(lines):
+            g.append(f'<text x="{x + 20:.1f}" y="{y + 66 + j * 21}" class="sans" font-size="14.5" fill="{MUTE}">{esc(ln)}</text>')
+        meta = pr.get("language") or ""
+        if pr.get("stars"):
+            meta += f"  *  {pr['stars']}" if meta else f"* {pr['stars']}"
+        if meta:
+            g.append(f'<text x="{x + 20:.1f}" y="{y + ch - 18}" class="mono" font-size="12" fill="{MUTE}">{esc(meta)}</text>')
+        g.append("</g>")
+        p.append("".join(g))
+    return svg(W, H, "".join(p), ["serif", "serifi", "sans", "sansm", "mono"],
+               title="What I'm coding: " + ", ".join(pr["name"] for pr in projects[:3]))
+
+
 def main():
     days, repos = load_data()
     OUT.mkdir(parents=True, exist_ok=True)
@@ -448,6 +510,7 @@ def main():
         "learn": tile(YELLOW, INK, "LEARN", "AI & ML", "learning",
                       "LLMs, AI agents and open source, on the way to GSoC.", 0.4),
         "activity": activity(days),
+        "coding": coding(load_projects()),
         "graph": graph(days),
         "stack": stack(),
         "arth": arth(),
@@ -457,6 +520,8 @@ def main():
         "contact-email": contact("email"),
     }
     for name, s in cards.items():
+        if s is None:
+            continue
         (OUT / f"{name}.svg").write_text(s)
         print(f"{name}.svg  {len(s) / 1024:.0f} KB")
 
