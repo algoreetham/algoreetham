@@ -116,7 +116,7 @@ ANIM = "" if STATIC else """
 .blink{animation:blink 1s steps(1) infinite}
 .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:pulse 1.8s ease-in-out infinite}
 .nudge{animation:nudge 1.6s ease-in-out infinite}
-@keyframes wipe{0%{transform:translateY(-100px)}16%,100%{transform:none}}
+@keyframes wipe{0%{transform:translateY(-100px)}16%,100%{transform:translateY(var(--ph,330px))}}
 @keyframes sweep{0%{transform:translateX(0)}40%,100%{transform:translateX(900px)}}
 @keyframes ring{0%{opacity:.55;transform:scale(.5)}100%{opacity:0;transform:scale(2.2)}}
 @keyframes streak{0%{transform:translateX(0)}30%,100%{transform:translateX(560px)}}
@@ -206,7 +206,7 @@ def hero():
 
     # portrait panel: your ASCII face prints in from the top with a soft edge
     px, py, pw, ph = 590, 40, 354, 330
-    wipe_style = f"--d:1s;transform:translateY({ph}px)" if not STATIC else f"transform:translateY({ph}px)"
+    wipe_style = f"--d:1s;--ph:{ph}px;transform:translateY({ph}px)" if not STATIC else f"transform:translateY({ph}px)"
     defs = (f'<clipPath id="portrait-clip"><rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="20"/></clipPath>'
             '<linearGradient id="feather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/>'
             '<stop offset="1" stop-color="#000"/></linearGradient>'
