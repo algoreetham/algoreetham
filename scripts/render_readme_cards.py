@@ -98,29 +98,29 @@ BASE_CSS = (".serif{font-family:'Instrument Serif',serif}"
             ".sans{font-family:Inter,sans-serif}.sansm{font-family:Inter,sans-serif;font-weight:500}")
 
 ANIM = "" if STATIC else """
-@keyframes rise{from{opacity:0;transform:translateY(16px)}}
-@keyframes fade{from{opacity:0}}
-@keyframes grow{from{transform:scaleY(0)}}
-@keyframes pop{from{opacity:0;transform:scale(.2)}}
-@keyframes swing{0%{opacity:0;transform:translateY(60px) rotate(-5deg)}60%{opacity:1;transform:translateY(-8px) rotate(1deg)}100%{opacity:1;transform:none}}
+@keyframes rise{0%{opacity:0;transform:translateY(16px)}5%,100%{opacity:1;transform:none}}
+@keyframes fade{0%{opacity:0}3%,100%{opacity:1}}
+@keyframes grow{0%{transform:scaleY(0)}5%,100%{transform:scaleY(1)}}
+@keyframes pop{0%{opacity:0;transform:scale(.2)}2.5%,100%{opacity:1;transform:scale(1)}}
+@keyframes swing{0%{opacity:0;transform:translateY(60px) rotate(-5deg)}3.75%{opacity:1;transform:translateY(-8px) rotate(1deg)}6.25%,100%{opacity:1;transform:none}}
 @keyframes blink{50%{opacity:0}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.6)}}
 @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
-@keyframes typ{from{fill-opacity:0}}
-.rise{animation:rise .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
-.fade{animation:fade .5s ease both;animation-delay:var(--d,0s)}
-.ty{animation:typ .01s linear both;animation-delay:var(--d,0s)}
-.grow{transform-box:fill-box;transform-origin:50% 100%;animation:grow .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
-.pop{transform-box:fill-box;transform-origin:50% 50%;animation:pop .35s cubic-bezier(.3,1.6,.5,1) both;animation-delay:var(--d,0s)}
-.swing{transform-box:fill-box;transform-origin:0 100%;animation:swing 1s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0s)}
+@keyframes typ{0%{fill-opacity:0}.1%,100%{fill-opacity:1}}
+.rise{animation:rise 16s cubic-bezier(.2,.7,.2,1) infinite both;animation-delay:var(--d,0s)}
+.fade{animation:fade 16s ease infinite both;animation-delay:var(--d,0s)}
+.ty{animation:typ 16s linear infinite both;animation-delay:var(--d,0s)}
+.grow{transform-box:fill-box;transform-origin:50% 100%;animation:grow 16s cubic-bezier(.2,.7,.2,1) infinite both;animation-delay:var(--d,0s)}
+.pop{transform-box:fill-box;transform-origin:50% 50%;animation:pop 16s cubic-bezier(.3,1.6,.5,1) infinite both;animation-delay:var(--d,0s)}
+.swing{transform-box:fill-box;transform-origin:0 100%;animation:swing 16s cubic-bezier(.2,.8,.2,1) infinite both;animation-delay:var(--d,0s)}
 .blink{animation:blink 1s steps(1) infinite}
 .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:pulse 1.8s ease-in-out infinite}
 .nudge{animation:nudge 1.6s ease-in-out infinite}
-@keyframes wipe{from{transform:translateY(-100px)}}
+@keyframes wipe{0%{transform:translateY(-100px)}16%,100%{transform:none}}
 @keyframes sweep{0%{transform:translateX(0)}40%,100%{transform:translateX(900px)}}
 @keyframes ring{0%{opacity:.55;transform:scale(.5)}100%{opacity:0;transform:scale(2.2)}}
 @keyframes streak{0%{transform:translateX(0)}30%,100%{transform:translateX(560px)}}
-.wipe{animation:wipe 2.6s cubic-bezier(.35,0,.25,1) both;animation-delay:var(--d,0s)}
+.wipe{animation:wipe 16s cubic-bezier(.35,0,.25,1) infinite both;animation-delay:var(--d,0s)}
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
@@ -266,7 +266,7 @@ def tile(color, fg, label, line1, line2, body, delay, count=None):
         for i in range(frames):
             v = round(count * (1 - (1 - i / (frames - 1)) ** 3))
             p.append(f'<text class="cnt serif" x="32" y="{y1}" font-size="{fs}" fill="{fg}" opacity="0">{v:,}'
-                     f'<set attributeName="opacity" to="1" begin="{t0 + i * dt_:.2f}s" dur="{dt_:.2f}s"/></text>')
+                     f'<set attributeName="opacity" to="1" begin="{";".join(f"{t0 + i * dt_ + 16 * k:.2f}s" for k in range(40))}" dur="{dt_:.2f}s"/></text>')
         p.append(f'<text class="serif fade" x="32" y="{y1}" font-size="{fs}" fill="{fg}" '
                  f'style="--d:{t0 + frames * dt_:.2f}s">{count:,}</text>')
     else:

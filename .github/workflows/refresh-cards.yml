@@ -2,13 +2,16 @@ name: Refresh profile cards
 
 on:
   schedule:
-    - cron: "30 0 * * *"   # every day, 6:00 AM India time
-  workflow_dispatch:        # lets you press "Run workflow" yourself
-  push:
-    paths: ["scripts/**", "data/**", ".github/workflows/refresh-cards.yml"]
+    - cron: "*/30 * * * *"   # every 30 minutes, so your daily commits show up quickly
+  workflow_dispatch:          # lets you press "Run workflow" yourself
+  push:                       # also runs whenever you push to this repo
 
 permissions:
   contents: write
+
+concurrency:
+  group: refresh-cards
+  cancel-in-progress: false
 
 jobs:
   refresh:
@@ -27,9 +30,16 @@ jobs:
         run: |
           python scripts/render_readme_cards.py
           python scripts/build_site.py
+      - name: Bust the image cache in README
+        run: |
+          V=$(cat cards/*.svg | sha1sum | cut -c1-8)
+          sed -i -E "s#(\./cards/[a-z-]+\.svg)\?v=[A-Za-z0-9]+#\1?v=$V#g" README.md
       - name: Save changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add cards index.html data/contributions.json
-          git diff --cached --quiet || (git commit -m "Refresh profile cards and live site" && git push)
+          git add cards index.html data/contributions.json README.md
+          git diff --cached --quiet && exit 0
+          git commit -m "Refresh profile cards and live site"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
