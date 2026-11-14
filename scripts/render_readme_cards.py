@@ -116,11 +116,11 @@ ANIM = "" if STATIC else """
 .blink{animation:blink 1s steps(1) infinite}
 .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:pulse 1.8s ease-in-out infinite}
 .nudge{animation:nudge 1.6s ease-in-out infinite}
-@keyframes wipe{0%{transform:translateY(-100px)}16%,100%{transform:translateY(var(--ph,330px))}}
+@keyframes wipe{0%{transform:translateY(-100px)}100%{transform:translateY(var(--ph,330px))}}
 @keyframes sweep{0%{transform:translateX(0)}40%,100%{transform:translateX(900px)}}
 @keyframes ring{0%{opacity:.55;transform:scale(.5)}100%{opacity:0;transform:scale(2.2)}}
 @keyframes streak{0%{transform:translateX(0)}30%,100%{transform:translateX(560px)}}
-.wipe{animation:wipe 16s cubic-bezier(.35,0,.25,1) infinite both;animation-delay:var(--d,0s)}
+.wipe{animation:wipe 2.6s cubic-bezier(.35,0,.25,1) both;animation-delay:var(--d,0s)}
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
