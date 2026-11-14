@@ -21,7 +21,7 @@
 @keyframes sweep{0%{transform:translateX(0)}40%,100%{transform:translateX(900px)}}
 @keyframes ring{0%{opacity:.55;transform:scale(.5)}100%{opacity:0;transform:scale(2.2)}}
 @keyframes streak{0%{transform:translateX(0)}30%,100%{transform:translateX(560px)}}
-.wipe{animation:wipe 5s cubic-bezier(.35,0,.25,1) both;animation-delay:var(--d,0s)}
+.wipe{animation:wipe 10s cubic-bezier(.35,0,.25,1) both;animation-delay:var(--d,0s)}
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
