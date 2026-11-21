@@ -25,11 +25,15 @@
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes tower{0%{transform:scaleY(0)}14%,44%{transform:scaleY(1)}50%,100%{transform:scaleY(0)}}
+@keyframes vw{0%,46%{opacity:1}50%,96%{opacity:0}100%{opacity:1}}
+@keyframes tlab{0%,13%{opacity:0}17%,44%{opacity:1}48%,100%{opacity:0}}
 @keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
 @keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
-.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tower{animation:tower 8s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.vw{animation:vw 8s linear infinite}
+.tlab{animation:tlab 8s linear infinite both;animation-delay:var(--d,0s)}
 .tcover{animation:typecover 9s steps(var(--n),end) infinite}
 .glowg{animation:glow 5s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.vb{display:none}.cnt{display:none}}
 </style></defs><rect width="490" height="150" rx="26" fill="#3a56f5"/><text x="32" y="46" class="mono" font-size="13" letter-spacing="2.5" fill="#fff">LINKEDIN</text><g class="nudge"><path d="M440 40 h18 M451 33 l7 7 l-7 7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g><text x="32" y="104" class="serif" font-size="52" fill="#fff">Preetham Singh</text><text x="32" y="130" class="serifi" font-size="22" fill="#fff" fill-opacity=".75">Let's connect</text></svg>

@@ -25,11 +25,15 @@
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes tower{0%{transform:scaleY(0)}14%,44%{transform:scaleY(1)}50%,100%{transform:scaleY(0)}}
+@keyframes vw{0%,46%{opacity:1}50%,96%{opacity:0}100%{opacity:1}}
+@keyframes tlab{0%,13%{opacity:0}17%,44%{opacity:1}48%,100%{opacity:0}}
 @keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
 @keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
-.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tower{animation:tower 8s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.vw{animation:vw 8s linear infinite}
+.tlab{animation:tlab 8s linear infinite both;animation-delay:var(--d,0s)}
 .tcover{animation:typecover 9s steps(var(--n),end) infinite}
 .glowg{animation:glow 5s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.vb{display:none}.cnt{display:none}}
 </style></defs><rect width="1000" height="64" rx="18" fill="#f3f3f1"/><text class="mono" x="56" y="39" font-size="20" fill="#111111"><tspan fill="#3a56f5">$ </tspan>building AI and web projects, one commit at a time</text><g class="tcover" style="--n:52;--w:626.0px;transform:translateX(626.0px)"><rect x="70" y="18" width="654.0" height="28" fill="#f3f3f1"/><rect class="blink" x="70" y="19" width="2.5" height="26" fill="#3a56f5"/></g></svg>

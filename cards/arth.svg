@@ -25,11 +25,15 @@
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes tower{0%{transform:scaleY(0)}14%,44%{transform:scaleY(1)}50%,100%{transform:scaleY(0)}}
+@keyframes vw{0%,46%{opacity:1}50%,96%{opacity:0}100%{opacity:1}}
+@keyframes tlab{0%,13%{opacity:0}17%,44%{opacity:1}48%,100%{opacity:0}}
 @keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
 @keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
-.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tower{animation:tower 8s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.vw{animation:vw 8s linear infinite}
+.tlab{animation:tlab 8s linear infinite both;animation-delay:var(--d,0s)}
 .tcover{animation:typecover 9s steps(var(--n),end) infinite}
 .glowg{animation:glow 5s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.vb{display:none}.cnt{display:none}}
 </style></defs><rect width="1000" height="250" rx="28" fill="#f3f3f1"/><text x="56" y="62" class="mono" font-size="14" letter-spacing="2.5" fill="#6b6b66">FEATURED PROJECT</text><text x="56" y="146" font-size="84" fill="#111111" class="rise" style="--d:0.000s"><tspan class="serif">ARTH </tspan><tspan class="serifi" fill="#3a56f5">assistant</tspan></text><text x="56" y="182" class="mono" font-size="14" fill="#6b6b66">Automated Response to Human Intent</text><text x="520" y="104" class="sans" font-size="18" fill="#111111">A personal AI assistant that runs on my own</text><text x="520" y="132" class="sans" font-size="18" fill="#111111">computer. It remembers me, understands how I</text><text x="520" y="160" class="sans" font-size="18" fill="#111111">feel, opens apps and does quick tasks.</text><circle cx="528" cy="210" r="6" fill="#3a56f5"/><text x="544" y="215" class="mono" font-size="14" fill="#6b6b66">Python</text><text x="910" y="62" text-anchor="end" class="mono" font-size="14" letter-spacing="2.5" fill="#111111">VIEW REPO</text><g class="nudge"><path d="M926 56 h18 M937 49 l7 7 l-7 7" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
