@@ -124,6 +124,12 @@ ANIM = "" if STATIC else """
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
+@keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
+.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tcover{animation:typecover 9s steps(var(--n),end) infinite}
+.glowg{animation:glow 5s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
 """
 
@@ -498,11 +504,137 @@ def coding(projects):
                title="What I'm coding: " + ", ".join(pr["name"] for pr in projects[:3]))
 
 
+def mix(a, b, t):
+    """Blend hex colour a towards b by t (0..1)."""
+    ca = [int(a[i:i + 2], 16) for i in (1, 3, 5)]
+    cb = [int(b[i:i + 2], 16) for i in (1, 3, 5)]
+    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(ca, cb))
+
+
+TOWER_BLUES = ["#9eacf8", "#6f84f6", "#3a56f5", "#2338d6"]
+
+
+def towers(days):
+    """3D isometric towers: one per day, height = contributions that day."""
+    W = 1000
+    days = days[-182:]  # last 26 weeks, so the towers stay big enough to read
+    first_wd = (days[0][0].weekday() + 1) % 7
+    ncols = math.ceil((len(days) + first_wd) / 7)
+    hw = (W - 112) / (ncols + 7)
+    hh = hw / 2
+    hmax = 150
+    oy = 40 + hmax + hh + (ncols - 1) * hh
+    H = int(oy + 7 * hh + 76)
+    ox = 56 + hw
+    nz = sorted(c for _, c in days if c > 0)
+    q = [nz[int(len(nz) * f)] for f in (.25, .5, .75)] if nz else [1, 2, 3]
+    maxc = max((c for _, c in days), default=0) or 1
+    total = sum(c for _, c in days)
+
+    cells = []
+    for i, (day, c) in enumerate(days):
+        u, v = divmod(i + first_wd, 7)
+        cells.append((v - u, u, v, day, c, ox + (u + v) * hw, oy + (v - u) * hh))
+    ground = "".join(f"M{cx:.1f} {cy - hh:.1f}L{cx + hw:.1f} {cy:.1f}L{cx:.1f} {cy + hh:.1f}L{cx - hw:.1f} {cy:.1f}Z"
+                     for *_, cx, cy in cells)
+    p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>',
+         f'<text x="56" y="76" font-size="50" fill="{INK}" class="rise"{d(0)}><tspan class="serif">Every day, </tspan>'
+         f'<tspan class="serifi" fill="{BLUE}">a tower</tspan></text>',
+         f'<text x="56" y="108" class="mono fade"{d(.8)} font-size="13" letter-spacing="2" fill="{MUTE}">ONE TOWER PER DAY · TALLER = MORE CONTRIBUTIONS</text>',
+         f'<path d="{ground}" fill="#e1e7fd" stroke="#ffffff" stroke-width="1"/>']
+    tallest = None
+    for _, u, v, day, c, cx, cy in sorted(cells, key=lambda t: (t[0], t[1])):
+        if c == 0:
+            continue
+        h = max(7, c / maxc * hmax)
+        lvl = 1 + sum(c > t for t in q) - 1
+        base = TOWER_BLUES[min(lvl, 3)]
+        a, b = hw * .86, hh * .86
+        f = lambda *pts: " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+        left = f((cx - a, cy), (cx, cy + b), (cx, cy + b - h), (cx - a, cy - h))
+        right = f((cx, cy + b), (cx + a, cy), (cx + a, cy - h), (cx, cy + b - h))
+        top = f((cx, cy - b - h), (cx + a, cy - h), (cx, cy + b - h), (cx - a, cy - h))
+        style = f"--d:{u * .07 + v * .012:.2f}s;transform-origin:{cx:.1f}px {cy:.1f}px"
+        p.append(f'<g class="tower" style="{style}"><polygon points="{left}" fill="{base}"/>'
+                 f'<polygon points="{right}" fill="{mix(base, "#0a1a8a", .38)}"/>'
+                 f'<polygon points="{top}" fill="{mix(base, "#ffffff", .8)}" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round"/></g>')
+        if tallest is None or c > tallest[0]:
+            tallest = (c, cx, cy - b - h, u, v, day)
+    if tallest:
+        c, cx, ty, u, v, day = tallest
+        p.append(f'<text class="mono fade" style="--d:{u * .07 + v * .012 + 1:.2f}s" x="{cx:.1f}" y="{ty - 10:.1f}" '
+                 f'text-anchor="middle" font-size="14" fill="{BLUE}">{c}</text>')
+    ly = H - 30
+    lx = W - 56 - 4 * 22 - 44
+    p.append(f'<text x="{lx - 10}" y="{ly}" text-anchor="end" class="mono" font-size="13" fill="{MUTE}">less</text>')
+    for i, col in enumerate(TOWER_BLUES):
+        p.append(f'<rect x="{lx + i * 22}" y="{ly - 12}" width="16" height="16" rx="4" fill="{col}"/>')
+    p.append(f'<text x="{lx + 4 * 22 + 4}" y="{ly}" class="mono" font-size="13" fill="{MUTE}">more</text>')
+    return svg(W, H, "".join(p), ["serif", "serifi", "mono"],
+               title=f"3D tower chart of {total} contributions over the last 6 months, one tower per day")
+
+
+def stats(days, repos):
+    """Blue stats case: repositories, contributions, current streak."""
+    W, H = 1000, 210
+    items = [(repos, "public repositories"), (sum(c for _, c in days), "contributions this year"),
+             (streaks(days), "day streak")]
+    col = (W - 112) / 3
+    p = [f'<rect width="{W}" height="{H}" rx="28" fill="{BLUE}"/>',
+         f'<text x="56" y="52" class="mono fade"{d(.3)} font-size="14" letter-spacing="2.5" fill="#ffffff">GITHUB AT A GLANCE</text>']
+    frames, dt_ = 18, .05
+    for k, (n, label) in enumerate(items):
+        x = 56 + k * col
+        t0 = .5 + k * .2
+        if k:
+            p.append(f'<line x1="{x - 24:.0f}" x2="{x - 24:.0f}" y1="84" y2="170" stroke="#ffffff" stroke-opacity=".28"/>')
+        if STATIC:
+            p.append(f'<text class="serif" x="{x:.0f}" y="142" font-size="76" fill="#ffffff">{n:,}</text>')
+        else:
+            for i in range(frames):
+                val = round(n * (1 - (1 - i / (frames - 1)) ** 3))
+                begin = ";".join(f"{t0 + i * dt_ + 16 * r:.2f}s" for r in range(40))
+                p.append(f'<text class="cnt serif" x="{x:.0f}" y="142" font-size="76" fill="#ffffff" opacity="0">{val:,}'
+                         f'<set attributeName="opacity" to="1" begin="{begin}" dur="{dt_:.2f}s"/></text>')
+            p.append(f'<text class="serif fade" style="--d:{t0 + frames * dt_:.2f}s" x="{x:.0f}" y="142" font-size="76" fill="#ffffff">{n:,}</text>')
+        p.append(f'<text class="serifi rise" style="--d:{t0 + .3:.2f}s" x="{x:.0f}" y="176" font-size="26" fill="#ffffff">{esc(label)}</text>')
+    return svg(W, H, "".join(p), ["serif", "serifi", "mono"],
+               title=f"{items[0][0]} public repositories, {items[1][0]} contributions this year, {items[2][0]} day streak")
+
+
+def typing():
+    """One line that types itself out, with a blinking cursor."""
+    text = "building AI and web projects, one commit at a time"
+    W, H, x0, fs = 1000, 64, 56, 20
+    n, wt = len(text), tw("mono", "$ " + text, fs)
+    body = [f'<rect width="{W}" height="{H}" rx="18" fill="{PAPER}"/>',
+            f'<text class="mono" x="{x0}" y="39" font-size="{fs}" fill="{INK}"><tspan fill="{BLUE}">$ </tspan>{esc(text)}</text>',
+            f'<g class="tcover" style="--n:{n + 2};--w:{wt + 2:.1f}px;transform:translateX({wt + 2:.1f}px)">'
+            f'<rect x="{x0 + 14}" y="18" width="{wt + 30:.1f}" height="28" fill="{PAPER}"/>'
+            f'<rect class="blink" x="{x0 + 14}" y="19" width="2.5" height="26" fill="{BLUE}"/></g>']
+    return svg(W, H, "".join(body), ["mono"], title=text)
+
+
+def divider():
+    """A thin line with a soft blue glow that drifts across it."""
+    W, H = 1000, 28
+    defs = ('<linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a56f5" stop-opacity="0"/>'
+            '<stop offset=".5" stop-color="#3a56f5"/><stop offset="1" stop-color="#3a56f5" stop-opacity="0"/></linearGradient>')
+    body = (f'<rect x="56" y="13" width="{W - 112}" height="2" rx="1" fill="{LINE}"/>'
+            f'<g class="glowg" style="transform:translateX(-320px)"><rect x="0" y="9" width="320" height="10" rx="5" fill="url(#gg)" opacity=".28"/>'
+            f'<rect x="0" y="12.5" width="320" height="3" rx="1.5" fill="url(#gg)"/></g>')
+    return svg(W, H, body, [], defs, "Divider")
+
+
 def main():
     days, repos = load_data()
     OUT.mkdir(parents=True, exist_ok=True)
     cards = {
         "hero": hero(),
+        "typing": typing(),
+        "stats": stats(days, repos),
+        "towers": towers(days),
+        "divider": divider(),
         "build": tile(BLUE, "#ffffff", "BUILD", str(repos), "public repos",
                       "Software and AI projects, built in the open.", 0.1, count=repos),
         "hackathons": tile(RED, "#ffffff", "HACKATHONS", "Many", "hackathons",

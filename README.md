@@ -7,6 +7,14 @@
 
 <img src="./cards/hero.svg?v=6f8d2156" width="100%" alt="Preetham Singh. A little curiosity, a lot of imagination and endless possibilities." />
 
+<img src="./cards/typing.svg?v=1" width="100%" alt="Building AI and web projects, one commit at a time." />
+
+<img src="./cards/stats.svg?v=1" width="100%" alt="My GitHub stats: public repositories, contributions this year and current streak." />
+
+<img src="./cards/towers.svg?v=1" width="100%" alt="3D tower chart of my daily contributions over the last 6 months." />
+
+<img src="./cards/divider.svg?v=1" width="100%" alt="" />
+
 <img src="./cards/graph.svg?v=6f8d2156" width="100%" alt="My GitHub contribution graph for the last year, refreshed daily." />
 
 <img src="./cards/activity.svg?v=6f8d2156" width="100%" alt="My GitHub contributions per month for the last 12 months, with my streak and active days." />
