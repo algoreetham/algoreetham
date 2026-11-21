@@ -75,6 +75,83 @@ def clean_card_svg(card_name):
     return text
 
 
+TOWERS_HTML = """
+    <!-- Interactive 3D towers: drag to rotate, wheel or +/- to resize -->
+    <div class="card" id="card-towers3d" style="position:relative;background:#f3f3f1;border-radius:28px;overflow:hidden">
+      <div style="position:absolute;left:32px;top:24px;pointer-events:none">
+        <div style="font:400 44px 'Instrument Serif',serif;color:#111">Every day, <i style="color:#3a56f5">a tower</i></div>
+        <div style="font:400 12px 'JetBrains Mono',monospace;letter-spacing:2px;color:#6b6b66;margin-top:6px">DRAG TO TURN · WHEEL OR + / − TO RESIZE</div>
+      </div>
+      <div style="position:absolute;right:20px;top:24px;display:flex;gap:8px">
+        <button id="tw-minus" aria-label="Smaller" style="width:36px;height:36px;border-radius:50%;border:0;background:#3a56f5;color:#fff;font-size:20px;cursor:pointer">−</button>
+        <button id="tw-plus" aria-label="Bigger" style="width:36px;height:36px;border-radius:50%;border:0;background:#3a56f5;color:#fff;font-size:20px;cursor:pointer">+</button>
+      </div>
+      <canvas id="tw-canvas" style="display:block;width:100%;height:560px;touch-action:pan-y;cursor:grab"></canvas>
+    </div>
+    <script>
+    (function () {
+      const days = __DATA__;
+      const cv = document.getElementById("tw-canvas"), ctx = cv.getContext("2d");
+      const card = document.getElementById("card-towers3d");
+      const COLS = ["#9eacf8", "#6f84f6", "#3a56f5", "#2338d6"];
+      const nz = days.filter(c => c > 0).sort((a, b) => a - b);
+      const q = [.25, .5, .75].map(f => nz[Math.floor(nz.length * f)] || 1);
+      const max = Math.max(1, ...days);
+      const first = days.length ? days.firstWd : 0;
+      let ang = 0.8, tilt = 0.55, zoom = 1, grown = 0, t0 = 0, drag = null, auto = true;
+      const mix = (h, k) => { const n = parseInt(h.slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255;
+        const m = c => Math.round(c + ((k > 0 ? 255 : 0) - c) * Math.abs(k));
+        return `rgb(${m(r)},${m(g)},${m(b)})`; };
+      function size() { const d = devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+        cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); }
+      function draw(now) {
+        const W = cv.clientWidth, H = cv.clientHeight, S = Math.min(W / 46, 22) * zoom;
+        ctx.clearRect(0, 0, W, H);
+        const cells = days.map((c, i) => { const u = Math.floor((i + days.firstWd) / 7), v = (i + days.firstWd) % 7;
+          const x = (u - (days.cols - 1) / 2) * S, z = (v - 3) * S;
+          return { c, x, z, xr: x * Math.cos(ang) - z * Math.sin(ang), zr: x * Math.sin(ang) + z * Math.cos(ang), u }; })
+          .sort((a, b) => a.zr - b.zr);
+        const cx = W / 2, cy = H * .62, st = Math.sin(tilt), ct = Math.cos(tilt), hw = S * .44;
+        const P = (x, z, y) => { const xr = x * Math.cos(ang) - z * Math.sin(ang), zr = x * Math.sin(ang) + z * Math.cos(ang);
+          return [cx + xr, cy + zr * st - y * ct]; };
+        const poly = (pts, fill, line) => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+          ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); if (line) { ctx.strokeStyle = line; ctx.lineWidth = 1; ctx.stroke(); } };
+        cells.forEach(k => poly([P(k.x - S / 2, k.z - S / 2, 0), P(k.x + S / 2, k.z - S / 2, 0), P(k.x + S / 2, k.z + S / 2, 0), P(k.x - S / 2, k.z + S / 2, 0)], "#e1e7fd", "#fff"));
+        cells.forEach(k => {
+          if (!k.c) return;
+          const p = Math.min(1, Math.max(0, (now - t0) / 900 - k.u * .03)), e = 1 - Math.pow(1 - p, 3);
+          const h = Math.max(6, k.c / max * 150 * zoom) * e, base = COLS[q.filter(t => k.c > t).length];
+          const x0 = k.x - hw, x1 = k.x + hw, z0 = k.z - hw, z1 = k.z + hw;
+          const sides = [[[x0, z1], [x1, z1], 0, 1, -.1], [[x1, z1], [x1, z0], 1, 0, .2], [[x1, z0], [x0, z0], 0, -1, -.1], [[x0, z0], [x0, z1], -1, 0, .2]];
+          sides.forEach(([a, b, nx, nz2, sh]) => {
+            const nzr = nx * Math.sin(ang) + nz2 * Math.cos(ang);
+            if (nzr <= 0) return;
+            poly([P(a[0], a[1], 0), P(b[0], b[1], 0), P(b[0], b[1], h), P(a[0], a[1], h)], mix(base, nx ? -.38 : sh), null);
+          });
+          poly([P(x0, z0, h), P(x1, z0, h), P(x1, z1, h), P(x0, z1, h)], mix(base, .8), "#fff");
+        });
+      }
+      function loop(now) {
+        if (auto && !drag) ang += .004;
+        draw(now); requestAnimationFrame(loop);
+      }
+      cv.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY }; auto = false; cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing"; });
+      cv.addEventListener("pointermove", e => { if (!drag) return;
+        ang += (e.clientX - drag.x) * .01; if (e.pointerType === "mouse") tilt = Math.min(1.3, Math.max(.2, tilt + (e.clientY - drag.y) * .005));
+        drag = { x: e.clientX, y: e.clientY }; });
+      const end = () => { drag = null; cv.style.cursor = "grab"; };
+      cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+      const setZoom = z => { zoom = Math.min(2.2, Math.max(.5, z)); };
+      cv.addEventListener("wheel", e => { e.preventDefault(); setZoom(zoom * (e.deltaY < 0 ? 1.08 : .93)); }, { passive: false });
+      document.getElementById("tw-plus").onclick = () => setZoom(zoom * 1.15);
+      document.getElementById("tw-minus").onclick = () => setZoom(zoom / 1.15);
+      new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) t0 = performance.now(); }), { threshold: .3 }).observe(card);
+      addEventListener("resize", size); size(); requestAnimationFrame(loop);
+    })();
+    </script>
+"""
+
+
 def build_html():
     font_css = get_font_faces()
     
@@ -90,6 +167,14 @@ def build_html():
     hackathon_list_svg = clean_card_svg("hackathon-list")
     linkedin_svg = clean_card_svg("contact-linkedin")
     email_svg = clean_card_svg("contact-email")
+
+    import json
+    raw = json.loads((ROOT / "data" / "contributions.json").read_text())["days"][-182:]
+    import datetime as _dt
+    first_wd = (_dt.date.fromisoformat(raw[0]["date"]).weekday() + 1) % 7
+    counts = [x["count"] for x in raw]
+    cols = -(-(len(counts) + first_wd) // 7)
+    towers_html = TOWERS_HTML.replace("__DATA__", "Object.assign(" + json.dumps(counts) + ", {firstWd: %d, cols: %d})" % (first_wd, cols)).replace("days.firstWd", "days.firstWd")
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -308,6 +393,8 @@ def build_html():
     <div class="card" id="card-graph">
       {graph_svg}
     </div>
+
+    {towers_html}
 
     <!-- Row 3: 12-Month Activity Card -->
     <div class="card" id="card-activity">
