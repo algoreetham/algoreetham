@@ -124,13 +124,17 @@ ANIM = "" if STATIC else """
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes tower{0%{transform:scaleY(0)}14%,44%{transform:scaleY(1)}50%,100%{transform:scaleY(0)}}
+@keyframes vw{0%,46%{opacity:1}50%,96%{opacity:0}100%{opacity:1}}
+@keyframes tlab{0%,13%{opacity:0}17%,44%{opacity:1}48%,100%{opacity:0}}
 @keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
 @keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
-.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tower{animation:tower 8s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.vw{animation:vw 8s linear infinite}
+.tlab{animation:tlab 8s linear infinite both;animation-delay:var(--d,0s)}
 .tcover{animation:typecover 9s steps(var(--n),end) infinite}
 .glowg{animation:glow 5s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.vb{display:none}.cnt{display:none}}
 """
 
 
@@ -515,7 +519,8 @@ TOWER_BLUES = ["#9eacf8", "#6f84f6", "#3a56f5", "#2338d6"]
 
 
 def towers(days):
-    """3D isometric towers: one per day, height = contributions that day."""
+    """3D isometric towers: one per day, height = contributions that day.
+    Every 4 seconds the towers drop and rise again from the opposite side."""
     W = 1000
     days = days[-182:]  # last 26 weeks, so the towers stay big enough to read
     first_wd = (days[0][0].weekday() + 1) % 7
@@ -530,40 +535,52 @@ def towers(days):
     q = [nz[int(len(nz) * f)] for f in (.25, .5, .75)] if nz else [1, 2, 3]
     maxc = max((c for _, c in days), default=0) or 1
     total = sum(c for _, c in days)
+    f = lambda *pts: " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
 
-    cells = []
-    for i, (day, c) in enumerate(days):
-        u, v = divmod(i + first_wd, 7)
-        cells.append((v - u, u, v, day, c, ox + (u + v) * hw, oy + (v - u) * hh))
-    ground = "".join(f"M{cx:.1f} {cy - hh:.1f}L{cx + hw:.1f} {cy:.1f}L{cx:.1f} {cy + hh:.1f}L{cx - hw:.1f} {cy:.1f}Z"
-                     for *_, cx, cy in cells)
+    def view(flip):
+        """flip=True looks at the same towers from the opposite side."""
+        cells = []
+        for i, (day, c) in enumerate(days):
+            u, v = divmod(i + first_wd, 7)
+            if flip:
+                u, v = ncols - 1 - u, 6 - v
+            cells.append((v - u, u, v, c, ox + (u + v) * hw, oy + (v - u) * hh))
+        ground = "".join(f"M{cx:.1f} {cy - hh:.1f}L{cx + hw:.1f} {cy:.1f}L{cx:.1f} {cy + hh:.1f}L{cx - hw:.1f} {cy:.1f}Z"
+                         for *_, cx, cy in cells)
+        cls = "vw vb" if flip else "vw"
+        sty = ' style="animation-delay:-4s"' if flip else ""
+        out = [f'<g class="{cls}"{sty}><path d="{ground}" fill="#e1e7fd" stroke="#ffffff" stroke-width="1"/>']
+        tallest = None
+        for _, u, v, c, cx, cy in sorted(cells, key=lambda t: (t[0], t[1])):
+            if c == 0:
+                continue
+            h = max(7, c / maxc * hmax)
+            base = TOWER_BLUES[sum(c > t for t in q)]
+            a, b = hw * .86, hh * .86
+            left = f((cx - a, cy), (cx, cy + b), (cx, cy + b - h), (cx - a, cy - h))
+            right = f((cx, cy + b), (cx + a, cy), (cx + a, cy - h), (cx, cy + b - h))
+            top = f((cx, cy - b - h), (cx + a, cy - h), (cx, cy + b - h), (cx - a, cy - h))
+            delay = (u * .05 + v * .01) - (4 if flip else 0)
+            out.append(f'<g class="tower" style="--d:{delay:.2f}s;transform-origin:{cx:.1f}px {cy:.1f}px">'
+                       f'<polygon points="{left}" fill="{base}"/>'
+                       f'<polygon points="{right}" fill="{mix(base, "#0a1a8a", .38)}"/>'
+                       f'<polygon points="{top}" fill="{mix(base, "#ffffff", .8)}" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round"/></g>')
+            if tallest is None or c > tallest[0]:
+                tallest = (c, cx, cy - b - h, delay)
+        if tallest:
+            c, cx, ty, delay = tallest
+            out.append(f'<text class="mono tlab" style="--d:{delay:.2f}s" x="{cx:.1f}" y="{ty - 10:.1f}" '
+                       f'text-anchor="middle" font-size="14" fill="{BLUE}">{c}</text>')
+        out.append("</g>")
+        return "".join(out)
+
     p = [f'<rect width="{W}" height="{H}" rx="28" fill="{PAPER}"/>',
          f'<text x="56" y="76" font-size="50" fill="{INK}" class="rise"{d(0)}><tspan class="serif">Every day, </tspan>'
          f'<tspan class="serifi" fill="{BLUE}">a tower</tspan></text>',
          f'<text x="56" y="108" class="mono fade"{d(.8)} font-size="13" letter-spacing="2" fill="{MUTE}">ONE TOWER PER DAY · TALLER = MORE CONTRIBUTIONS</text>',
-         f'<path d="{ground}" fill="#e1e7fd" stroke="#ffffff" stroke-width="1"/>']
-    tallest = None
-    for _, u, v, day, c, cx, cy in sorted(cells, key=lambda t: (t[0], t[1])):
-        if c == 0:
-            continue
-        h = max(7, c / maxc * hmax)
-        lvl = 1 + sum(c > t for t in q) - 1
-        base = TOWER_BLUES[min(lvl, 3)]
-        a, b = hw * .86, hh * .86
-        f = lambda *pts: " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
-        left = f((cx - a, cy), (cx, cy + b), (cx, cy + b - h), (cx - a, cy - h))
-        right = f((cx, cy + b), (cx + a, cy), (cx + a, cy - h), (cx, cy + b - h))
-        top = f((cx, cy - b - h), (cx + a, cy - h), (cx, cy + b - h), (cx - a, cy - h))
-        style = f"--d:{u * .07 + v * .012:.2f}s;transform-origin:{cx:.1f}px {cy:.1f}px"
-        p.append(f'<g class="tower" style="{style}"><polygon points="{left}" fill="{base}"/>'
-                 f'<polygon points="{right}" fill="{mix(base, "#0a1a8a", .38)}"/>'
-                 f'<polygon points="{top}" fill="{mix(base, "#ffffff", .8)}" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round"/></g>')
-        if tallest is None or c > tallest[0]:
-            tallest = (c, cx, cy - b - h, u, v, day)
-    if tallest:
-        c, cx, ty, u, v, day = tallest
-        p.append(f'<text class="mono fade" style="--d:{u * .07 + v * .012 + 1:.2f}s" x="{cx:.1f}" y="{ty - 10:.1f}" '
-                 f'text-anchor="middle" font-size="14" fill="{BLUE}">{c}</text>')
+         view(False)]
+    if not STATIC:
+        p.append(view(True))
     ly = H - 30
     lx = W - 56 - 4 * 22 - 44
     p.append(f'<text x="{lx - 10}" y="{ly}" text-anchor="end" class="mono" font-size="13" fill="{MUTE}">less</text>')
