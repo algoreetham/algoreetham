@@ -25,5 +25,11 @@
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
+@keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
+.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tcover{animation:typecover 9s steps(var(--n),end) infinite}
+.glowg{animation:glow 5s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
 </style></defs><rect width="490" height="330" rx="28" fill="#f3f3f1"/><text x="36" y="56" class="mono" font-size="14" letter-spacing="2.5" fill="#6b6b66">CURRENTLY</text><text x="36" y="118" font-size="56" fill="#111111"><tspan class="serif">Right </tspan><tspan class="serifi" fill="#3a56f5">now</tspan></text><circle class="pulse" cx="42" cy="162" r="5" fill="#3a56f5"/><text x="62" y="168" class="sans rise" style="--d:0.400s" font-size="17" fill="#111111">Rebuilding ARTH as a voice assistant with a</text><text x="62" y="192" class="sans rise" style="--d:0.400s" font-size="17" fill="#111111">local AI model</text><circle class="pulse" cx="42" cy="230" r="5" fill="#3a56f5"/><text x="62" y="236" class="sans rise" style="--d:0.600s" font-size="17" fill="#111111">Learning LLMs and AI agents</text><circle class="pulse" cx="42" cy="274" r="5" fill="#3a56f5"/><text x="62" y="280" class="sans rise" style="--d:0.800s" font-size="17" fill="#111111">Working towards GSoC and open source</text></svg>

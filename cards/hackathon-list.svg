@@ -25,5 +25,11 @@
 .sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
 .ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
 .streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
+@keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
+.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tcover{animation:typecover 9s steps(var(--n),end) infinite}
+.glowg{animation:glow 5s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
 </style></defs><rect width="490" height="330" rx="28" fill="#f3f3f1"/><text x="36" y="56" class="mono" font-size="14" letter-spacing="2.5" fill="#6b6b66">HACKATHONS</text><text x="36" y="118" font-size="56" fill="#111111"><tspan class="serif">Built at </tspan><tspan class="serifi" fill="#3a56f5">hackathons</tspan></text><g class="rise" style="--d:0.400s"><line x1="36" x2="454" y1="144" y2="144" stroke="#d6d6d0"/><text x="36" y="166" class="sans" font-size="17" fill="#111111">iQOO City Battles, Bengaluru</text></g><g class="rise" style="--d:0.550s"><line x1="36" x2="454" y1="182" y2="182" stroke="#d6d6d0"/><text x="36" y="204" class="sans" font-size="17" fill="#111111">NHAI hackathon (VisionRide)</text></g><g class="rise" style="--d:0.700s"><line x1="36" x2="454" y1="220" y2="220" stroke="#d6d6d0"/><text x="36" y="242" class="sans" font-size="17" fill="#111111">Tackathon 2026</text></g><text x="36" y="280" class="serifi rise" style="--d:0.850s" font-size="22" fill="#6b6b66">and many more.</text></svg>

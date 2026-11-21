@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="28" viewBox="0 0 1000 28" role="img" aria-label="Divider"><title>Divider</title><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7e7e3"/><stop offset="1" stop-color="#f3f3f1"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a56f5" stop-opacity="0"/><stop offset=".5" stop-color="#3a56f5"/><stop offset="1" stop-color="#3a56f5" stop-opacity="0"/></linearGradient><style>.serif{font-family:'Instrument Serif',serif}.serifi{font-family:'Instrument Serif',serif;font-style:italic}.mono{font-family:'JetBrains Mono',monospace}.sans{font-family:Inter,sans-serif}.sansm{font-family:Inter,sans-serif;font-weight:500}
+@keyframes rise{0%{opacity:0;transform:translateY(16px)}5%,100%{opacity:1;transform:none}}
+@keyframes fade{0%{opacity:0}3%,100%{opacity:1}}
+@keyframes grow{0%{transform:scaleY(0)}5%,100%{transform:scaleY(1)}}
+@keyframes pop{0%{opacity:0;transform:scale(.2)}2.5%,100%{opacity:1;transform:scale(1)}}
+@keyframes swing{0%{opacity:0;transform:translateY(60px) rotate(-5deg)}3.75%{opacity:1;transform:translateY(-8px) rotate(1deg)}6.25%,100%{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.6)}}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@keyframes typ{0%{fill-opacity:0}.1%,100%{fill-opacity:1}}
+.rise{animation:rise 16s cubic-bezier(.2,.7,.2,1) infinite both;animation-delay:var(--d,0s)}
+.fade{animation:fade 16s ease infinite both;animation-delay:var(--d,0s)}
+.ty{animation:typ 16s linear infinite both;animation-delay:var(--d,0s)}
+.grow{transform-box:fill-box;transform-origin:50% 100%;animation:grow 16s cubic-bezier(.2,.7,.2,1) infinite both;animation-delay:var(--d,0s)}
+.pop{transform-box:fill-box;transform-origin:50% 50%;animation:pop 16s cubic-bezier(.3,1.6,.5,1) infinite both;animation-delay:var(--d,0s)}
+.swing{transform-box:fill-box;transform-origin:0 100%;animation:swing 16s cubic-bezier(.2,.8,.2,1) infinite both;animation-delay:var(--d,0s)}
+.blink{animation:blink 1s steps(1) infinite}
+.pulse{transform-box:fill-box;transform-origin:50% 50%;animation:pulse 1.8s ease-in-out infinite}
+.nudge{animation:nudge 1.6s ease-in-out infinite}
+@keyframes wipe{0%{transform:translateY(-100px)}100%{transform:translateY(var(--ph,330px))}}
+@keyframes sweep{0%{transform:translateX(0)}40%,100%{transform:translateX(900px)}}
+@keyframes ring{0%{opacity:.55;transform:scale(.5)}100%{opacity:0;transform:scale(2.2)}}
+@keyframes streak{0%{transform:translateX(0)}30%,100%{transform:translateX(560px)}}
+.wipe{animation:wipe 10s cubic-bezier(.35,0,.25,1) both;animation-delay:var(--d,0s)}
+.sweep{animation:sweep 6.5s ease-in-out infinite;animation-delay:2.2s}
+.ring{transform-box:fill-box;transform-origin:50% 50%;animation:ring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
+.streak{animation:streak 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes tower{0%{transform:scaleY(0)}9%,88%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+@keyframes typecover{0%{transform:translateX(0)}50%,100%{transform:translateX(var(--w))}}
+@keyframes glow{0%{transform:translateX(-320px)}60%,100%{transform:translateX(1000px)}}
+.tower{animation:tower 12s cubic-bezier(.3,.7,.3,1) infinite both;animation-delay:var(--d,0s)}
+.tcover{animation:typecover 9s steps(var(--n),end) infinite}
+.glowg{animation:glow 5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.cnt{display:none}}
+</style></defs><rect x="56" y="13" width="888" height="2" rx="1" fill="#d6d6d0"/><g class="glowg" style="transform:translateX(-320px)"><rect x="0" y="9" width="320" height="10" rx="5" fill="url(#gg)" opacity=".28"/><rect x="0" y="12.5" width="320" height="3" rx="1.5" fill="url(#gg)"/></g></svg>
