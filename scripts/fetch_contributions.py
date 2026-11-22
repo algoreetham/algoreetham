@@ -28,7 +28,7 @@ if token:
     QUERY = """
     query($login: String!, $from: DateTime!, $to: DateTime!) {
       user(login: $login) {
-        repositories(privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false) { totalCount }
+        repositories(privacy: PUBLIC, ownerAffiliations: OWNER) { totalCount }
         pinnedItems(first: 6, types: REPOSITORY) { nodes { ... on Repository { FIELDS } } }
         recent: repositories(first: 20, privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false,
                              orderBy: {field: PUSHED_AT, direction: DESC}) { nodes { FIELDS } }
