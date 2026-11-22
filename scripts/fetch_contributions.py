@@ -29,7 +29,6 @@ if token:
     query($login: String!, $from: DateTime!, $to: DateTime!) {
       user(login: $login) {
         repositories(privacy: PUBLIC, ownerAffiliations: OWNER) { totalCount }
-        allrepos: repositories(first: 100, ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]) { totalCount nodes { nameWithOwner isFork isPrivate isArchived } }
         pinnedItems(first: 6, types: REPOSITORY) { nodes { ... on Repository { FIELDS } } }
         recent: repositories(first: 20, privacy: PUBLIC, ownerAffiliations: OWNER, isFork: false,
                              orderBy: {field: PUSHED_AT, direction: DESC}) { nodes { FIELDS } }
@@ -56,7 +55,6 @@ if token:
     weeks = user["contributionsCollection"]["contributionCalendar"]["weeks"]
     days = [{"date": d["date"], "count": d["contributionCount"]} for w in weeks for d in w["contributionDays"]]
     repos = user["repositories"]["totalCount"]
-    print("DEBUG", user["allrepos"]["totalCount"], [(n["nameWithOwner"], n["isFork"], n["isPrivate"], n["isArchived"]) for n in user["allrepos"]["nodes"]])
     projects = pick_projects(user["pinnedItems"]["nodes"], user["recent"]["nodes"])
 else:
     # Fallback for local execution without GITHUB_TOKEN: fetch public calendar & repos
