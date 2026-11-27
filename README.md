@@ -5,32 +5,32 @@
 </div>
 <br/>
 
-<img src="./cards/hero.svg?v=ad16a901" width="100%" alt="Preetham Singh. A little curiosity, a lot of imagination and endless possibilities." />
+<img src="./cards/hero.svg?v=e6afb453" width="100%" alt="Preetham Singh. A little curiosity, a lot of imagination and endless possibilities." />
 
-<img src="./cards/typing.svg?v=ad16a901" width="100%" alt="Building AI and web projects, one commit at a time." />
+<img src="./cards/typing.svg?v=e6afb453" width="100%" alt="Building AI and web projects, one commit at a time." />
 
-<img src="./cards/stats.svg?v=ad16a901" width="100%" alt="My GitHub stats: public repositories, contributions this year and current streak." />
+<img src="./cards/stats.svg?v=e6afb453" width="100%" alt="My GitHub stats: public repositories, contributions this year and current streak." />
 
-<img src="./cards/towers.svg?v=ad16a901" width="100%" alt="3D tower chart of my daily contributions over the last 6 months." />
+<img src="./cards/towers.svg?v=e6afb453" width="100%" alt="3D tower chart of my daily contributions over the last 6 months." />
 
-<img src="./cards/divider.svg?v=ad16a901" width="100%" alt="" />
+<img src="./cards/divider.svg?v=e6afb453" width="100%" alt="" />
 
-<img src="./cards/graph.svg?v=ad16a901" width="100%" alt="My GitHub contribution graph for the last year, refreshed daily." />
+<img src="./cards/graph.svg?v=e6afb453" width="100%" alt="My GitHub contribution graph for the last year, refreshed daily." />
 
-<img src="./cards/activity.svg?v=ad16a901" width="100%" alt="My GitHub contributions per month for the last 12 months, with my streak and active days." />
+<img src="./cards/activity.svg?v=e6afb453" width="100%" alt="My GitHub contributions per month for the last 12 months, with my streak and active days." />
 
-<a href="https://github.com/algoreetham?tab=repositories"><img src="./cards/build.svg?v=ad16a901" width="32.5%" alt="Build: my public repositories" /></a>
-<a href="https://www.linkedin.com/in/preetham-singh-1b8676382/"><img src="./cards/hackathons.svg?v=ad16a901" width="32.5%" alt="Hackathons: I have joined many" /></a>
-<a href="https://github.com/algoreetham?tab=stars"><img src="./cards/learn.svg?v=ad16a901" width="32.5%" alt="Learn: AI, ML, LLMs and open source" /></a>
+<a href="https://github.com/algoreetham?tab=repositories"><img src="./cards/build.svg?v=e6afb453" width="32.5%" alt="Build: my public repositories" /></a>
+<a href="https://www.linkedin.com/in/preetham-singh-1b8676382/"><img src="./cards/hackathons.svg?v=e6afb453" width="32.5%" alt="Hackathons: I have joined many" /></a>
+<a href="https://github.com/algoreetham?tab=stars"><img src="./cards/learn.svg?v=e6afb453" width="32.5%" alt="Learn: AI, ML, LLMs and open source" /></a>
 
-<img src="./cards/coding.svg?v=ad16a901" width="100%" alt="What I am coding: my latest projects on GitHub." />
+<img src="./cards/coding.svg?v=e6afb453" width="100%" alt="What I am coding: my latest projects on GitHub." />
 
-<img src="./cards/stack.svg?v=ad16a901" width="100%" alt="Tech stack: Python, Java, C++, JavaScript, HTML, CSS, React, Node.js, Tailwind CSS, Flask, FastAPI, NumPy, Pandas, scikit-learn, PyTorch, TensorFlow, Git, GitHub Actions, Azure, Figma." />
+<img src="./cards/stack.svg?v=e6afb453" width="100%" alt="Tech stack: Python, Java, C++, JavaScript, HTML, CSS, React, Node.js, Tailwind CSS, Flask, FastAPI, NumPy, Pandas, scikit-learn, PyTorch, TensorFlow, Git, GitHub Actions, Azure, Figma." />
 
-<a href="https://github.com/algoreetham/ARTH-Automated-Response-To-Human-Intent"><img src="./cards/arth.svg?v=ad16a901" width="100%" alt="Featured project: ARTH, a personal AI assistant (Automated Response to Human Intent)." /></a>
+<a href="https://github.com/algoreetham/ARTH-Automated-Response-To-Human-Intent"><img src="./cards/arth.svg?v=e6afb453" width="100%" alt="Featured project: ARTH, a personal AI assistant (Automated Response to Human Intent)." /></a>
 
-<img src="./cards/now.svg?v=ad16a901" width="49.5%" alt="Right now: rebuilding ARTH, learning LLMs and AI agents, working towards GSoC." />
-<img src="./cards/hackathon-list.svg?v=ad16a901" width="49.5%" alt="Hackathons I have built at." />
+<img src="./cards/now.svg?v=e6afb453" width="49.5%" alt="Right now: rebuilding ARTH, learning LLMs and AI agents, working towards GSoC." />
+<img src="./cards/hackathon-list.svg?v=e6afb453" width="49.5%" alt="Hackathons I have built at." />
 
-<a href="https://www.linkedin.com/in/preetham-singh-1b8676382/"><img src="./cards/contact-linkedin.svg?v=ad16a901" width="49.5%" alt="Connect with me on LinkedIn." /></a>
-<a href="mailto:preetham.singh.sp@gmail.com"><img src="./cards/contact-email.svg?v=ad16a901" width="49.5%" alt="Email me at preetham.singh.sp@gmail.com." /></a>
+<a href="https://www.linkedin.com/in/preetham-singh-1b8676382/"><img src="./cards/contact-linkedin.svg?v=e6afb453" width="49.5%" alt="Connect with me on LinkedIn." /></a>
+<a href="mailto:preetham.singh.sp@gmail.com"><img src="./cards/contact-email.svg?v=e6afb453" width="49.5%" alt="Email me at preetham.singh.sp@gmail.com." /></a>
